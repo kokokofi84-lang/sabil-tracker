@@ -287,16 +287,22 @@
   <div class="modal">
     <h3 style="color:var(--primary)">✏️ Edit Stoppage Time</h3>
     <p style="font-size:12px;color:var(--muted);margin:8px 0 16px">Correct the start/end time if it was logged late</p>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
-      <div>
-        <label style="font-size:12px;font-weight:600;color:var(--muted);display:block;margin-bottom:5px">Start Time</label>
-        <input type="time" id="edit-start" style="width:100%;border:1.5px solid var(--border);border-radius:7px;padding:9px;font-size:14px;font-family:inherit">
+    <div style="margin-bottom:14px">
+      <label style="font-size:12px;font-weight:600;color:var(--muted);display:block;margin-bottom:8px">⏱ Start Time</label>
+      <div style="display:flex;gap:6px;align-items:center">
+        <select id="edit-start-h" style="flex:1;border:1.5px solid var(--border);border-radius:7px;padding:10px;font-size:18px;font-family:inherit;text-align:center;background:#FAFBFC;font-weight:700"><option value="00">00</option><option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option></select>
+        <span style="font-size:22px;font-weight:700;color:var(--primary);padding:0 4px">:</span>
+        <select id="edit-start-m" style="flex:1;border:1.5px solid var(--border);border-radius:7px;padding:10px;font-size:18px;font-family:inherit;text-align:center;background:#FAFBFC;font-weight:700"><option value="00">00</option><option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option><option value="24">24</option><option value="25">25</option><option value="26">26</option><option value="27">27</option><option value="28">28</option><option value="29">29</option><option value="30">30</option><option value="31">31</option><option value="32">32</option><option value="33">33</option><option value="34">34</option><option value="35">35</option><option value="36">36</option><option value="37">37</option><option value="38">38</option><option value="39">39</option><option value="40">40</option><option value="41">41</option><option value="42">42</option><option value="43">43</option><option value="44">44</option><option value="45">45</option><option value="46">46</option><option value="47">47</option><option value="48">48</option><option value="49">49</option><option value="50">50</option><option value="51">51</option><option value="52">52</option><option value="53">53</option><option value="54">54</option><option value="55">55</option><option value="56">56</option><option value="57">57</option><option value="58">58</option><option value="59">59</option></select>
       </div>
-      <div>
-        <label style="font-size:12px;font-weight:600;color:var(--muted);display:block;margin-bottom:5px">End Time</label>
-        <input type="time" id="edit-end" style="width:100%;border:1.5px solid var(--border);border-radius:7px;padding:9px;font-size:14px;font-family:inherit">
-        <p style="font-size:10px;color:var(--muted);margin-top:4px">Leave empty if still ongoing</p>
+    </div>
+    <div style="margin-bottom:14px">
+      <label style="font-size:12px;font-weight:600;color:var(--muted);display:block;margin-bottom:8px">🏁 End Time <span style="font-weight:400;color:#aaa">(optional)</span></label>
+      <div style="display:flex;gap:6px;align-items:center">
+        <select id="edit-end-h" style="flex:1;border:1.5px solid var(--border);border-radius:7px;padding:10px;font-size:18px;font-family:inherit;text-align:center;background:#FAFBFC;font-weight:700"><option value="">--</option><option value="00">00</option><option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option></select>
+        <span style="font-size:22px;font-weight:700;color:var(--primary);padding:0 4px">:</span>
+        <select id="edit-end-m" style="flex:1;border:1.5px solid var(--border);border-radius:7px;padding:10px;font-size:18px;font-family:inherit;text-align:center;background:#FAFBFC;font-weight:700"><option value="">--</option><option value="00">00</option><option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option><option value="24">24</option><option value="25">25</option><option value="26">26</option><option value="27">27</option><option value="28">28</option><option value="29">29</option><option value="30">30</option><option value="31">31</option><option value="32">32</option><option value="33">33</option><option value="34">34</option><option value="35">35</option><option value="36">36</option><option value="37">37</option><option value="38">38</option><option value="39">39</option><option value="40">40</option><option value="41">41</option><option value="42">42</option><option value="43">43</option><option value="44">44</option><option value="45">45</option><option value="46">46</option><option value="47">47</option><option value="48">48</option><option value="49">49</option><option value="50">50</option><option value="51">51</option><option value="52">52</option><option value="53">53</option><option value="54">54</option><option value="55">55</option><option value="56">56</option><option value="57">57</option><option value="58">58</option><option value="59">59</option></select>
       </div>
+      <p style="font-size:10px;color:var(--muted);margin-top:6px">Leave -- if still ongoing</p>
     </div>
     <div class="modal-actions">
       <button class="btn-confirm" onclick="saveEditStop()">Save Changes</button>
@@ -751,51 +757,62 @@ window._printPDF = () => {
 // ── EDIT STOP ──
 let editingStopId = null;
 
-window._editStop = (id) => {{
+window._editStop = (id) => {
   const s = stoppages.find(x => x.id === id);
   if (!s) return;
   editingStopId = id;
-  document.getElementById('edit-start').value = s.startDisplay || '';
-  document.getElementById('edit-end').value   = s.endDisplay   || '';
+  // Set hour/minute selects
+  const [sh, sm] = (s.startDisplay || '00:00').split(':');
+  document.getElementById('edit-start-h').value = sh || '00';
+  document.getElementById('edit-start-m').value = sm || '00';
+  if (s.endDisplay) {
+    const [eh, em] = s.endDisplay.split(':');
+    document.getElementById('edit-end-h').value = eh || '';
+    document.getElementById('edit-end-m').value = em || '';
+  } else {
+    document.getElementById('edit-end-h').value = '';
+    document.getElementById('edit-end-m').value = '';
+  }
   document.getElementById('edit-modal-overlay').classList.add('show');
-}};
+};
 
-window._closeEditModal = () => {{
+window._closeEditModal = () => {
   document.getElementById('edit-modal-overlay').classList.remove('show');
   editingStopId = null;
-}};
+};
 
-window._saveEditStop = async () => {{
+window._saveEditStop = async () => {
   const s = stoppages.find(x => x.id === editingStopId);
   if (!s) return;
 
-  const newStart = document.getElementById('edit-start').value;
-  const newEnd   = document.getElementById('edit-end').value;
+  const sh = document.getElementById('edit-start-h').value;
+  const sm = document.getElementById('edit-start-m').value;
+  const eh = document.getElementById('edit-end-h').value;
+  const em = document.getElementById('edit-end-m').value;
 
-  if (!newStart) {{ alert('Start time is required'); return; }}
+  if (!sh) { alert('Please select start time'); return; }
 
-  // Update start
+  const newStart = `${sh}:${sm}`;
   s.startDisplay = newStart;
-  const today = viewingDate;
-  s.start = new Date(`${{today}}T${{newStart}}:00`).toISOString();
+  s.start = new Date(`${viewingDate}T${newStart}:00`).toISOString();
 
-  // Update end if provided
-  if (newEnd) {{
-    s.endDisplay = newEnd;
-    s.end = new Date(`${{today}}T${{newEnd}}:00`).toISOString();
-    // Recalculate duration
-    const startMs = new Date(s.start).getTime();
-    const endMs   = new Date(s.end).getTime();
-    s.durationMin = Math.round((endMs - startMs) / 60000);
-  }} else {{
+  if (eh && em && eh !== '--') {
+    const newEnd = `${eh}:${em}`;
+    s.endDisplay  = newEnd;
+    s.end = new Date(`${viewingDate}T${newEnd}:00`).toISOString();
+    const startMin = parseInt(sh)*60 + parseInt(sm);
+    const endMin   = parseInt(eh)*60 + parseInt(em);
+    s.durationMin  = endMin - startMin;
+    if (s.durationMin < 0) s.durationMin += 24*60;
+  } else {
     s.end = null;
-    s.endDisplay = null;
+    s.endDisplay  = null;
     s.durationMin = null;
-  }}
+  }
 
   await saveToFirestore();
-  closeEditModal();
-}};
+  window._closeEditModal();
+};
 
 init();
 </script>
