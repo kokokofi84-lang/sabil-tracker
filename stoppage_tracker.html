@@ -282,7 +282,47 @@
   </div>
 </div>
 
+<!-- EDIT TIME MODAL -->
+<div class="modal-overlay" id="edit-modal-overlay">
+  <div class="modal">
+    <h3 style="color:var(--primary)">✏️ Edit Stoppage Time</h3>
+    <p style="font-size:12px;color:var(--muted);margin:8px 0 16px">Correct the start/end time if it was logged late</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+      <div>
+        <label style="font-size:12px;font-weight:600;color:var(--muted);display:block;margin-bottom:5px">Start Time</label>
+        <input type="time" id="edit-start" style="width:100%;border:1.5px solid var(--border);border-radius:7px;padding:9px;font-size:14px;font-family:inherit">
+      </div>
+      <div>
+        <label style="font-size:12px;font-weight:600;color:var(--muted);display:block;margin-bottom:5px">End Time</label>
+        <input type="time" id="edit-end" style="width:100%;border:1.5px solid var(--border);border-radius:7px;padding:9px;font-size:14px;font-family:inherit">
+        <p style="font-size:10px;color:var(--muted);margin-top:4px">Leave empty if still ongoing</p>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-confirm" onclick="saveEditStop()">Save Changes</button>
+      <button class="btn-cancel" onclick="closeEditModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
 <!-- FIREBASE -->
+<script>
+// Global bridge functions called by HTML onclick handlers
+function openStopModal()  { if(window._openStopModal)  window._openStopModal();  }
+function resumeTransfer() { if(window._resumeTransfer) window._resumeTransfer(); }
+function closeModal()     { if(window._closeModal)      window._closeModal();     }
+function closeEditModal() { if(window._closeEditModal)  window._closeEditModal(); }
+function confirmStop()    { if(window._confirmStop)     window._confirmStop();    }
+function saveEditStop()   { if(window._saveEditStop)    window._saveEditStop();   }
+function goBackStep1()    { if(window._goBackStep1)     window._goBackStep1();    }
+function syncNow()        { if(window._syncNow)         window._syncNow();        }
+function onDateChange()   { if(window._onDateChange)    window._onDateChange();   }
+function clearAll()       { if(window._clearAll)        window._clearAll();       }
+function printPDF()       { if(window._printPDF)        window._printPDF();       }
+function selectParty(p,c,b) { if(window._selectParty)  window._selectParty(p,c,b); }
+function deleteStop(id)   { if(window._deleteStop)      window._deleteStop(id);   }
+function editStop(id)     { if(window._editStop)        window._editStop(id);     }
+</script>
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getFirestore, doc, getDoc, setDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
@@ -430,15 +470,15 @@ function setSyncStatus(state) {
   }
 }
 
-window.syncNow = () => listenToDate(viewingDate);
+window._syncNow = () => listenToDate(viewingDate);
 
-window.onDateChange = () => {
+window._onDateChange = () => {
   const val = document.getElementById('date-picker').value;
   if(val) listenToDate(val);
 };
 
 // ── MODAL ──
-window.openStopModal = () => {
+window._openStopModal = () => {
   if(currentStop||!isViewingToday) return;
   selectedReason=''; selectedParty='';
   document.getElementById('modal-notes').value='';
@@ -457,7 +497,7 @@ function showStep1() {
   document.getElementById('step-lbl').className='step-lbl active';
 }
 
-window.selectParty = (party, cls, btn) => {
+window._selectParty = (party, cls, btn) => {
   selectedParty=party; selectedReason='';
   document.querySelectorAll('.party-btn').forEach(b=>b.className='party-btn');
   btn.classList.add(cls);
@@ -488,10 +528,10 @@ function selectSubReason(el,reason) {
   selectedReason=reason;
 }
 
-window.goBackStep1 = () => { selectedReason=''; selectedParty=''; showStep1(); };
+window._goBackStep1 = () => { selectedReason=''; selectedParty=''; showStep1(); };
 window.closeModal  = () => document.getElementById('modal-overlay').classList.remove('show');
 
-window.confirmStop = async () => {
+window._confirmStop = async () => {
   if(!selectedParty) { alert('Please select a party first'); return; }
   if(!selectedReason) { alert('Please select a stoppage reason'); return; }
   const notes=document.getElementById('modal-notes').value.trim();
@@ -510,7 +550,7 @@ window.confirmStop = async () => {
   startElapsedTimer();
 };
 
-window.resumeTransfer = async () => {
+window._resumeTransfer = async () => {
   if(!currentStop) return;
   const now=new Date();
   const diffMin=Math.round((now-new Date(currentStop.start))/60000);
@@ -639,20 +679,20 @@ ${i+1}. ${icon} [${s.party}] ${s.reason}
   el.textContent=txt;
 }
 
-window.deleteStop = async (id) => {
+window._deleteStop = async (id) => {
   if(!confirm('Delete this stoppage?')) return;
   stoppages=stoppages.filter(s=>s.id!==id);
   await saveToFirestore();
 };
 
-window.clearAll = async () => {
+window._clearAll = async () => {
   if(!confirm('Clear all stoppages for today?')) return;
   stoppages=[]; currentStop=null; stopElapsedTimer();
   await saveToFirestore();
   setRunningUI();
 };
 
-window.printPDF = () => {
+window._printPDF = () => {
   const done=stoppages.filter(s=>s.end);
   const total=done.reduce((a,s)=>a+s.durationMin,0);
   const mills=done.filter(s=>s.party==='Mills');
@@ -703,6 +743,55 @@ window.printPDF = () => {
   <script>window.onload=()=>window.print()<\/script></body></html>`);
   w.document.close();
 };
+
+// ── EDIT STOP ──
+let editingStopId = null;
+
+window._editStop = (id) => {{
+  const s = stoppages.find(x => x.id === id);
+  if (!s) return;
+  editingStopId = id;
+  document.getElementById('edit-start').value = s.startDisplay || '';
+  document.getElementById('edit-end').value   = s.endDisplay   || '';
+  document.getElementById('edit-modal-overlay').classList.add('show');
+}};
+
+window._closeEditModal = () => {{
+  document.getElementById('edit-modal-overlay').classList.remove('show');
+  editingStopId = null;
+}};
+
+window._saveEditStop = async () => {{
+  const s = stoppages.find(x => x.id === editingStopId);
+  if (!s) return;
+
+  const newStart = document.getElementById('edit-start').value;
+  const newEnd   = document.getElementById('edit-end').value;
+
+  if (!newStart) {{ alert('Start time is required'); return; }}
+
+  // Update start
+  s.startDisplay = newStart;
+  const today = viewingDate;
+  s.start = new Date(`${{today}}T${{newStart}}:00`).toISOString();
+
+  // Update end if provided
+  if (newEnd) {{
+    s.endDisplay = newEnd;
+    s.end = new Date(`${{today}}T${{newEnd}}:00`).toISOString();
+    // Recalculate duration
+    const startMs = new Date(s.start).getTime();
+    const endMs   = new Date(s.end).getTime();
+    s.durationMin = Math.round((endMs - startMs) / 60000);
+  }} else {{
+    s.end = null;
+    s.endDisplay = null;
+    s.durationMin = null;
+  }}
+
+  await saveToFirestore();
+  closeEditModal();
+}};
 
 init();
 </script>
