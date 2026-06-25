@@ -378,6 +378,8 @@ function init() {
   updateHeaderDate();
   updateClock();
   setInterval(updateClock, 1000);
+  // Auto refresh data every 10 seconds
+  setInterval(() => { if(window._syncNow) window._syncNow(); }, 10000);
 
   // Set date picker to today
   const picker = document.getElementById('date-picker');
@@ -612,6 +614,7 @@ function renderLog() {
     if(party==='Mills'){pStyle='background:#EAF0FB;color:#1A4D6E;border:1px solid #93C5FD';pIcon=MILLS_LOGO;}
     else{pStyle='background:#E6F5EE;color:#1A6B4A;border:1px solid #6EE7B7';pIcon=SABIL_LOGO;}
     const canDelete = isViewingToday && !isOngoing;
+    const canEdit   = isViewingToday && !isOngoing;
     const div=document.createElement('div');
     div.className='log-item';
     div.innerHTML=`
@@ -625,6 +628,7 @@ function renderLog() {
         </div>
         <div style="display:flex;align-items:center;gap:5px">
           <span class="log-duration ${isOngoing?'ongoing':''}" ${isOngoing?'id="ongoing-duration"':''}>${dur}</span>
+          ${canEdit?`<button class="edit-btn" onclick="editStop(${s.id})" title="Edit time">✏️</button>`:''}
           ${canDelete?`<button class="delete-btn" onclick="deleteStop(${s.id})" title="Delete">✕</button>`:''}
         </div>
       </div>
