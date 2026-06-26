@@ -386,6 +386,8 @@ function init() {
   setInterval(updateClock, 1000);
   // Auto refresh data every 10 seconds
   setInterval(() => { if(window._syncNow) window._syncNow(); }, 10000);
+  // Check for midnight rollover every minute
+  startMidnightCheck();
 
   // Set date picker to today
   const picker = document.getElementById('date-picker');
@@ -425,7 +427,7 @@ function listenToDate(dateStr) {
   setSyncStatus('loading');
 
   const ref = doc(db, 'stoppages', dateStr);
-  unsubscribe = onSnapshot(ref, (snap) => {
+  unsubscribe = onSnapshot(ref, async (snap) => {
     if(snap.exists()) {
       stoppages = snap.data().list || [];
     } else {
@@ -450,6 +452,51 @@ function listenToDate(dateStr) {
     console.error(err);
     setSyncStatus('error');
   });
+}
+
+// ── MIDNIGHT ROLLOVER ──
+// Check every minute if day has changed while a stoppage is ongoing
+function startMidnightCheck() {
+  setInterval(async () => {
+    const today = getTodayStr();
+    if (viewingDate !== today && currentStop) {
+      // Day changed with an open stoppage — close it at 23:59 on the old day
+      currentStop.endDisplay  = '23:59';
+      currentStop.end = new Date(`${viewingDate}T23:59:00`).toISOString();
+      const [sh, sm] = currentStop.startDisplay.split(':');
+      currentStop.durationMin = (23*60+59) - (parseInt(sh)*60+parseInt(sm));
+      await saveToFirestore();
+
+      // Switch to new day and open a new stoppage from 00:00
+      const oldParty  = currentStop.party;
+      const oldReason = currentStop.reason;
+      currentStop = null;
+      stopElapsedTimer();
+
+      // Switch to today
+      listenToDate(today);
+      document.getElementById('date-picker').value = today;
+
+      // After short delay, create new stoppage on new day
+      setTimeout(async () => {
+        const now = new Date();
+        const newStop = {
+          id: Date.now(),
+          start: new Date(`${today}T00:00:00`).toISOString(),
+          startDisplay: '00:00',
+          end: null, endDisplay: null,
+          reason: oldReason, party: oldParty,
+          notes: 'Continued from previous day',
+          durationMin: null
+        };
+        stoppages.push(newStop);
+        currentStop = newStop;
+        await saveToFirestore();
+        setStoppedUI();
+        startElapsedTimer();
+      }, 2000);
+    }
+  }, 60000); // check every minute
 }
 
 async function saveToFirestore() {
@@ -742,7 +789,10 @@ window._printPDF = () => {
   table{width:100%;border-collapse:collapse;margin-bottom:18px}th{background:#1A6B4A;color:#fff;padding:8px 9px;font-size:11px;text-align:left}th:first-child{text-align:center;width:32px}
   td{padding:8px 9px;border-bottom:1px solid #EEF0F4;vertical-align:middle}tr:nth-child(even) td{background:#F9FAFB}
   .sig{margin-top:36px;display:flex;justify-content:space-around;text-align:center;font-size:11px}.sig-line{border-top:1px solid #999;width:150px;margin:0 auto 5px}
-  .footer{margin-top:20px;border-top:1px solid #ddd;padding-top:10px;display:flex;justify-content:space-between;font-size:10px;color:#aaa}</style></head><body>
+  .footer{margin-top:20px;border-top:1px solid #ddd;padding-top:10px;display:flex;justify-content:space-between;font-size:10px;color:#aaa}
+  @media print{
+    @page { margin-bottom: 1.5cm; }
+  }</style></head><body>
   <div class="hdr"><img class="logo" src="${SABIL_LOGO}" alt="Sabil">
   <div class="hc"><div class="ht">Daily Operational Stoppage Report</div><div class="hs">Wheat Transfer Operations — Silos</div></div>
   <div class="hd"><strong>${dateStr}</strong><br>Printed at: ${new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})}</div></div>
