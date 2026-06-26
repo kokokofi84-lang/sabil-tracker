@@ -1,4 +1,66 @@
- In place   .action-area{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sabil — Transfer Stoppage Log</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#F0F5F2;--card:#fff;
+    --primary:#1A6B4A;--dark:#124D36;--mid:#2E8B5E;--accent:#4BAE7F;
+    --accent-light:#E6F5EE;--border:#D0E4D9;--text:#1A2E24;--muted:#5C7A69;
+    --red:#C0392B;--red-light:#FDECEA;--orange:#D4680A;--radius:12px;
+  }
+  body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:14px}
+
+  .hdr{background:linear-gradient(135deg,var(--dark) 0%,var(--primary) 60%,var(--mid) 100%);
+    border-radius:var(--radius);padding:16px 20px;margin-bottom:12px;
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    position:relative;overflow:hidden}
+  .hdr::after{content:'';position:absolute;left:-20px;top:-20px;width:160px;height:160px;
+    background:radial-gradient(circle,rgba(255,255,255,0.07) 2px,transparent 2px);
+    background-size:14px 14px;border-radius:50%;pointer-events:none}
+  .hdr-logo{height:36px;object-fit:contain}
+  .hdr-center{text-align:center;flex:1}
+  .hdr-title{color:#fff;font-size:15px;font-weight:700}
+  .hdr-date{color:rgba(255,255,255,0.7);font-size:11px;margin-top:2px}
+  .hdr-clock{color:#A8E6CC;font-size:20px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:1px}
+
+  .sync-bar{background:var(--card);border:1px solid var(--border);border-radius:10px;
+    padding:10px 16px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .sync-dot{width:8px;height:8px;border-radius:50%;background:#ccc;flex-shrink:0;transition:background .3s}
+  .sync-dot.live{background:#27AE60;box-shadow:0 0 0 3px rgba(39,174,96,.2);animation:pulse2 2s infinite}
+  .sync-dot.err{background:var(--red)}
+  @keyframes pulse2{0%,100%{opacity:1}50%{opacity:.5}}
+  .sync-label{font-size:12px;color:var(--muted);flex:1}
+  .sync-label strong{color:var(--text)}
+  .btn-sync{background:var(--accent-light);color:var(--primary);border:1px solid var(--border);
+    border-radius:7px;padding:5px 12px;font-size:12px;font-weight:600;font-family:inherit;cursor:pointer}
+
+  /* Date selector */
+  .date-bar{background:var(--card);border:1px solid var(--border);border-radius:10px;
+    padding:10px 16px;margin-bottom:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .date-bar label{font-size:12px;font-weight:600;color:var(--muted)}
+  .date-bar input{border:1.5px solid var(--border);border-radius:7px;padding:5px 10px;
+    font-size:12px;font-family:inherit;color:var(--text);background:#FAFBFC;cursor:pointer}
+  .date-bar input:focus{outline:none;border-color:var(--primary)}
+  .viewing-past{background:#FEF3E7;color:#D4680A;font-size:11px;font-weight:700;
+    padding:3px 10px;border-radius:20px;margin-right:auto}
+
+  .status-bar{border-radius:var(--radius);padding:13px 18px;margin-bottom:12px;
+    display:flex;align-items:center;justify-content:space-between;gap:10px;transition:all .3s}
+  .status-bar.running{background:var(--accent-light);border:2px solid var(--accent)}
+  .status-bar.stopped{background:var(--red-light);border:2px solid var(--red);animation:pulse3 1.5s infinite}
+  @keyframes pulse3{0%,100%{opacity:1}50%{opacity:.75}}
+  .status-label{font-size:15px;font-weight:700}
+  .status-bar.running .status-label{color:var(--primary)}
+  .status-bar.stopped .status-label{color:var(--red)}
+  .status-elapsed{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .status-elapsed span{font-weight:700;color:var(--red);font-size:14px}
+
+  .action-area{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
   .btn-stop{background:linear-gradient(135deg,#E74C3C,#C0392B);color:#fff;border:none;
     border-radius:var(--radius);padding:16px 12px;font-size:14px;font-weight:700;
     font-family:inherit;cursor:pointer;transition:all .2s;
@@ -687,7 +749,7 @@ window._printPDF = () => {
   <div class="sum"><div class="sc total"><div class="sv">${stoppages.length}</div><div class="ss">${formatDuration(total)}</div><div class="slb">Total Stoppages</div></div>${cards}</div>
   <table><thead><tr><th>#</th><th>Party</th><th>Stoppage Reason</th><th>Start</th><th>End</th><th>Duration</th><th>Notes</th></tr></thead><tbody>${rows}</tbody></table>
   <div class="sig"><div><div class="sig-line"></div>Control Room Operator</div><div><div class="sig-line"></div>Direct Supervisor</div></div>
-  <div class="footer"><span>Sabil — Stoppage Tracking System</span><span>${dateStr}</span></div>
+  <div class="footer"><span>Eng / Mohammed Kufiyyah / Sabil Co.</span><span>${dateStr}</span></div>
   <script>window.onload=()=>window.print()<\/script></body></html>`);
   w.document.close();
 };
