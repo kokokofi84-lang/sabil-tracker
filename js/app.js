@@ -140,6 +140,58 @@ function listenToDate(dateStr) {
       shiftStart = '00:00';
       shiftEnd = '23:59';
       targetAchieved = false;
+
+      if (isViewingToday) {
+        try {
+          const prevDate = new Date(dateStr + 'T12:00:00');
+          prevDate.setDate(prevDate.getDate() - 1);
+          const prevDateStr = prevDate.toLocaleDateString('en-CA');
+          const prevRef = doc(db, 'stoppages', prevDateStr);
+          const prevSnap = await getDoc(prevRef);
+
+          if (prevSnap.exists()) {
+            const prevData = prevSnap.data();
+            const prevList = prevData.list || [];
+            const openStop = prevList.find(s => !s.end);
+
+            if (openStop) {
+              const freshSnap = await getDoc(prevRef);
+              const freshList = freshSnap.exists() ? (freshSnap.data().list || []) : [];
+              const stillOpen = freshList.find(s => s.id === openStop.id && !s.end);
+
+              if (stillOpen) {
+                stillOpen.endDisplay = '23:59';
+                stillOpen.end = new Date(prevDateStr + 'T23:59:00').toISOString();
+                const [sh, sm] = stillOpen.startDisplay.split(':');
+                stillOpen.durationMin = (23*60+59) - (parseInt(sh)*60 + parseInt(sm));
+                await setDoc(prevRef, {
+                  ...freshSnap.data(),
+                  list: freshList,
+                  updatedAt: new Date().toISOString()
+                });
+
+                const newStop = {
+                  id: Date.now(),
+                  start: new Date(dateStr + 'T00:00:00').toISOString(),
+                  startDisplay: '00:00',
+                  end: null, endDisplay: null,
+                  reason: stillOpen.reason, party: stillOpen.party,
+                  notes: 'Continued from previous day',
+                  durationMin: null
+                };
+                stoppages = [newStop];
+                targetAchieved = false;
+                await saveToFirestore();
+              }
+            } else if (prevData.targetAchieved) {
+              targetAchieved = true;
+              await saveToFirestore();
+            }
+          }
+        } catch(e) {
+          console.error('Previous day check failed:', e);
+        }
+      }
     }
     const notesEl = document.getElementById('general-notes');
     if(notesEl && notesEl !== document.activeElement) notesEl.value = generalNotes;
