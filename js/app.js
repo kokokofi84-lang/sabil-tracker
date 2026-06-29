@@ -78,8 +78,12 @@ function init() {
   updateHeaderDate();
   updateClock();
   setInterval(updateClock, 1000);
-  // Auto refresh data every 10 seconds
+  // Lightweight connection check every 10 seconds (no UI re-render)
   setInterval(() => { if(window._syncNow) window._syncNow(); }, 10000);
+  // Re-establish listener when tab returns from background/sleep
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') listenToDate(viewingDate);
+  });
   // Check for midnight rollover every minute
   startMidnightCheck();
 
@@ -297,7 +301,16 @@ function setSyncStatus(state) {
   }
 }
 
-window._syncNow = () => listenToDate(viewingDate);
+window._syncNow = async () => {
+  try {
+    const ref = doc(db, 'stoppages', viewingDate);
+    await getDoc(ref);
+    setSyncStatus('live');
+  } catch(e) {
+    setSyncStatus('error');
+    listenToDate(viewingDate);
+  }
+};
 
 window._saveGeneralNotes = () => {
   generalNotes = document.getElementById('general-notes').value;
