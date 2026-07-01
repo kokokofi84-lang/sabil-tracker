@@ -420,6 +420,7 @@ window._confirmStop = async () => {
 };
 
 window._resumeTransfer = async () => {
+  document.getElementById('btn-resume').disabled = true;
   if(targetAchieved && !currentStop) {
     targetAchieved = false;
     await saveToFirestore();
