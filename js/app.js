@@ -318,7 +318,7 @@ window._saveGeneralNotes = () => {
   notesTimer = setTimeout(() => saveToFirestore(), 1000);
 };
 
-const ADMIN_PIN = '1234';
+const ADMIN_PIN = '8007';
 
 window._saveShiftTimes = () => {
   const pin = prompt('Enter admin PIN to change shift times:');
@@ -624,6 +624,8 @@ ${i+1}. ${icon} [${s.party}] ${s.reason}
 }
 
 window._deleteStop = async (id) => {
+  const pin = prompt('Enter admin PIN to delete stoppage:');
+  if(pin !== ADMIN_PIN) { alert('Incorrect PIN'); return; }
   if(!confirm('Delete this stoppage?')) return;
   stoppages=stoppages.filter(s=>s.id!==id);
   await saveToFirestore();
